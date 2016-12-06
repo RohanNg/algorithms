@@ -1,3 +1,4 @@
+package percolation;
 /******************************************************************************
  *  Compilation:  javac PercolationVisualizer.java
  *  Execution:    java PercolationVisualizer input.txt
@@ -27,7 +28,7 @@ public class PercolationVisualizer {
     private static final int DELAY = 10;
 
     // draw n-by-n percolation system
-    public static void draw(Percolation perc, int n) {
+    public static void draw(PercolationRecursive perc, int n) {
         StdDraw.clear();
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.setXscale(-0.05*n, 1.05*n);
@@ -62,14 +63,14 @@ public class PercolationVisualizer {
     }
 
     public static void main(String[] args) {
-        In in = new In("/home/rohan/workspace/algorithms/test/percolation/input50.txt");      // input file
+        In in = new In("/home/rohan/workspace/algorithms/test/percolation/input10.txt");      // input file
         int n = in.readInt();         // n-by-n percolation system
 
         // turn on animation mode
         StdDraw.enableDoubleBuffering();
 
         // repeatedly read in sites to open and draw resulting system
-        Percolation perc = new Percolation(n);
+        PercolationRecursive perc = new PercolationRecursive(n);
         draw(perc, n);
         StdDraw.show();
         StdDraw.pause(DELAY);

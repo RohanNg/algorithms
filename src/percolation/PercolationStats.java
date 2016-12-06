@@ -1,5 +1,7 @@
+package percolation;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
+import edu.princeton.cs.algs4.Stopwatch;
 
 public class PercolationStats {
 	private final double mean;
@@ -13,7 +15,7 @@ public class PercolationStats {
 		double[] trialResult = new double[trials];
 		for(int x = 0 ; x < trials; x++){
 			int count = 0;
-			Percolation sys = new Percolation(n);
+			PercolationRecursive sys = new PercolationRecursive(n);
 			while(!sys.percolates()){
 				int row = StdRandom.uniform(n) + 1;
 				int col = StdRandom.uniform(n) + 1; // return random integer uniformly in [1.n]
@@ -46,9 +48,13 @@ public class PercolationStats {
 	}
 	
 	public static void main(String[] args){
-		PercolationStats percolationStats = new PercolationStats(200, 100000);
+		System.out.println("Recursive solution:");
+		Stopwatch watch = new Stopwatch();
+		PercolationStats percolationStats = new PercolationStats(500, 2000);
+		System.out.println("elapsed time: " + watch.elapsedTime());
 		System.out.println("mean                     = " + percolationStats.mean());
 		System.out.println("stddev                   = " + percolationStats.stddev());
 		System.out.println("95% confidence interval  = " + percolationStats.confidenceLo() + ", " + percolationStats.confidenceHi);
+		
 	}
 }

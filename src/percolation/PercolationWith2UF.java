@@ -1,9 +1,10 @@
+package percolation;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
-public class Percolation {
+public class PercolationWith2UF implements Percolation{
 	private WeightedQuickUnionUF pecoTopBot, pecoTop;
 	private final boolean[] siteStatus; // 0 mean blocked site, 1 mean open site
 	private final int gridSize, virtualTopSiteId = 0, virtualBottomSiteId;
-	public Percolation(int n){
+	public PercolationWith2UF(int n){
 		if(n <= 0){
 			throw new IllegalArgumentException("n must be positive");
 		}
@@ -13,7 +14,7 @@ public class Percolation {
 		pecoTop = new WeightedQuickUnionUF(n*n+1);
 		siteStatus = new boolean[n*n+1];
 	}
-	 private void validate(int row, int col) throws IndexOutOfBoundsException{
+	private void validate(int row, int col) throws IndexOutOfBoundsException{
 		 if(row < 1 || row > gridSize || col < 1 || col > gridSize){
 			 throw new IndexOutOfBoundsException("Invalid input for coordinate of site in the grid");
 		 }
