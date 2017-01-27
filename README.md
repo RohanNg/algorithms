@@ -1,5 +1,5 @@
 # Algorithms
-This repo contains my solution to algorithms problem. 
+This repo contains my solutions to algorithm problems. 
 
 ## Problems in the course Algorithms, part I, 100% passed
 The course is offered by Priceton University thourgh Coursera, and has been tough by Robert Sedgewick, author of the book <a href="http://algs4.cs.princeton.edu/home/" target="_blank"> Algorithms </a>
