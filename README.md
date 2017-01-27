@@ -1,7 +1,7 @@
 # Algorithms
 This repo contains my solution to algorithms problem. 
 
-## solutions to problem in the course Algorithms, part I
+## Problems in the course Algorithms, part I, 100% passed
 The course is offered by Priceton University thourgh Coursera, and has been tough by Robert Sedgewick, author of the book <a href="http://algs4.cs.princeton.edu/home/" target="_blank"> Algorithms </a>
 ###The followings are problem specification:
 ###Problem 1: <a target="_blank" href="http://coursera.cs.princeton.edu/algs4/assignments/percolation.html">Percolation</a> 
