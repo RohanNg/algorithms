@@ -1,4 +1,4 @@
-package colinearPointDetection;
+package patternRecognition;
 
 import java.util.Arrays;
 

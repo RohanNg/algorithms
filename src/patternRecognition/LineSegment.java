@@ -5,7 +5,7 @@
  *
  *  An immutable data type for Line segments in the plane.
  *************************************************************************/
-package colinearPointDetection;
+package patternRecognition;
 
 public class LineSegment {
 	private final Point p; // one endpoint of this line segment

@@ -1,4 +1,4 @@
-package p8_puzzle;
+package eightPuzzle;
 
 import java.util.ArrayList;
 import java.util.Arrays;

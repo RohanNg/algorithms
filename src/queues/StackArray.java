@@ -1,7 +1,7 @@
 /**
  * @author Nguyen Hai Dang
  */
-package deques_and_randomizedQueues;
+package queues;
 
 public class StackArray<Item> {
 	private Item[] items;

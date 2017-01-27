@@ -1,4 +1,4 @@
-package colinearPointDetection;
+package patternRecognition;
 
 /******************************************************************************
  *  Compilation:  javac Point.java
