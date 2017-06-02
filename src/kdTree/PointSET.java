@@ -7,6 +7,7 @@ import java.util.TreeSet;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 
+// Brute for solution
 public class PointSET {
 	private final TreeSet<Point2D> rbtree;
 
@@ -58,9 +59,5 @@ public class PointSET {
 			}
 		}
 		return champion;
-	}
-
-	public static void main(String[] args) { // unit testing of the methods
-												// (optional)
 	}
 }

@@ -4,7 +4,9 @@ package kdTree;
  *  Compilation:  javac KdTreeVisualizer.java
  *  Execution:    java KdTreeVisualizer
  *  Dependencies: KdTree.java
- *
+ *  
+ *  KdTree client, visualizer internal structure of the tree
+ *  
  *  Add the points that the user clicks in the standard draw window
  *  to a kd-tree and draw the resulting kd-tree.
  *
