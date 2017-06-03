@@ -22,7 +22,7 @@ object IntegerMultiplication extends App{
     * Immutable integer
     * Fast addition and multiplication
     * Multiplication was implemented using Karatsuba algorithm
-    * Specifically
+    *
     * A * B can be calculated by
     * A = a*10^x + b
     * B = c*10^x + d
