@@ -1,4 +1,4 @@
-package graph.minCut;
+package graph;
 import com.sun.istack.internal.NotNull;
 
 import java.io.FileReader;
@@ -333,6 +333,7 @@ public class RandomContraction {
         IntStream.range(1, 201).forEach(
                 i -> g.addNode(i)
         );
+
         while (in.hasNextLine()) {
             List<Integer> input = Stream
                     .of(in.nextLine().trim().split("\\s+"))
