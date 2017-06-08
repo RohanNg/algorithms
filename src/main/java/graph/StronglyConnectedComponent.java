@@ -140,30 +140,24 @@ public class StronglyConnectedComponent {
                 node.setSeached(false);
         }
 
-        public List<Node<T>> depthFirstSearch(T from) {
-            markAllUnsearched();
-            List<Node<T>> collector = new ArrayList<>();
-            depthFirstSearchRec(nodes.get(from), collector);
-            return collector;
-        }
-
-        private void depthFirstSearchRec(Node<T> from, List<Node<T>> searched) {
-            from.seached = true;
-            for (Edge<T> edge : from.getOutbound())
-                if (!edge.head.seached)
-                    depthFirstSearchRec(edge.head, searched);
-            searched.add(from);
-        }
-
-        private void sccFirstDFS(Node<T> from, List<Node<T>> runtimeOrder) {
+        /**
+         * Run DFS for the first DFS Loop, which build
+         * the finishing time ordering
+         */
+        private void sccFirstDFS(Node<T> from, List<Node<T>> finishingTime) {
             from.seached = true;
             for (Edge<T> edge : from.getInbound())
                 if (!edge.tail.seached) {
-                    sccFirstDFS(edge.tail, runtimeOrder);
+                    sccFirstDFS(edge.tail, finishingTime);
                 }
-            runtimeOrder.add(from);
+            finishingTime.add(from);
         }
 
+        /**
+         * Run DFS for the second DFS Loop, which build
+         * the map from the leader to the size of the strongly connected component
+         * represented by the leader
+         */
         private void sccSecondDFS(Node<T> from, Node<T> leader, Map<Node<T>, Integer> collector) {
             from.seached = true;
             if (!collector.containsKey(leader))
@@ -174,6 +168,12 @@ public class StronglyConnectedComponent {
                     sccSecondDFS(edge.head, leader, collector);
         }
 
+        /**
+         * Search for strongly connected component in this graph
+         *
+         * @return a map from the leader component to the size of the
+         * strongly connected component represented by the leader
+         */
         public Map<Node<T>, Integer> searchForStronglyConnectedComponent() {
             // first DFS loop
             markAllUnsearched();
@@ -186,7 +186,7 @@ public class StronglyConnectedComponent {
             markAllUnsearched();
             Map<Node<T>, Integer> collector = new HashMap<>();
             ListIterator<Node<T>> it = runtimeOrder.listIterator(runtimeOrder.size());
-            while(it.hasPrevious()) {
+            while (it.hasPrevious()) {
                 Node<T> prev = it.previous();
                 if (!prev.seached)
                     sccSecondDFS(prev, prev, collector);
