@@ -32,7 +32,7 @@ public class PercolationVisualizer {
         StdDraw.clear();
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.setXscale(-0.05*n, 1.05*n);
-        StdDraw.setYscale(-0.05*n, 1.05*n);   // leave a border to write text
+        StdDraw.setYscale(-0.05*n, 1.05*n);   // leave a bo rder to write text
         StdDraw.filledSquare(n/2.0, n/2.0, n/2.0);
 
         // draw n-by-n grid
@@ -63,7 +63,7 @@ public class PercolationVisualizer {
     }
 
     public static void main(String[] args) {
-        In in = new In("/home/rohan/workspace/algorithms/test/percolation/input10.txt");      // input file
+        In in = new In("testData/percolation/sedgewick60.txt");      // input file
         int n = in.readInt();         // n-by-n percolation system
 
         // turn on animation mode

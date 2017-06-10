@@ -15,6 +15,7 @@ public class StackArray<Item> {
 	public boolean isEmpty(){
 		return N == 0;
 	}
+
 	public void push(Item item){
 		if( N == items.length) resize(2*items.length);
 		items[N++] = item;
@@ -27,6 +28,7 @@ public class StackArray<Item> {
 		printArrays();
 		return item;
 	}
+
 	private void resize(int capacity){
 		Item[] copy = (Item[]) new Object[capacity];
 		for(int i = 0; i < N ; i++){
