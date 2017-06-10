@@ -1,4 +1,5 @@
 package graph;
+
 import com.sun.istack.internal.NotNull;
 
 import java.io.FileReader;
@@ -9,6 +10,11 @@ import java.util.stream.Stream;
 
 public class RandomContraction {
 
+    /**
+     * Mutable undirected graph
+     * @param <T> value of the node in this graph
+     * Every node in this graph must contain unique value
+     */
     public static class Graph<T> {
         public interface Node<T> {
             boolean isSingle();
@@ -280,22 +286,41 @@ public class RandomContraction {
             edges = new LinkedList<>();
         }
 
-        public int attempMinCut() {
+        public int edgeNum() {
+            return edges.size();
+        }
+
+        public int nodeNum() {
+            return nodes.size();
+        }
+
+        /**
+         * Attempt to find Minimum Cut of this graph using Random Contraction Algorithm,
+         * Probability for this attempt to return the right number of crossing edges
+         * for the Minimum Cut of this graph is
+         * {@literal Pr[right min cut] >= 1/n^2}
+         * where n is number of node in this graph.
+         *
+         * This method does not have any side effect
+         *
+         * @return number of crossing edges found
+         */
+        public int attemptMinCut() {
             Random ran = new Random();
             // do a copy
             final Map<T, Node<T>> verticesMap = new HashMap<>();
             final List<Edge<T>> eds = new ArrayList<>();
-            for(Node<T> n : nodes.values()) {
+            for (Node<T> n : nodes.values()) {
                 verticesMap.put(n.value(), new SingleNode<>(n.value()));
             }
-            for(Edge<T> edge : edges) {
+            for (Edge<T> edge : edges) {
                 eds.add(verticesMap.get(edge.getA().value()).connect(verticesMap.get(edge.getB().value())));
             }
             final Set<Node> vertices = new HashSet<>(verticesMap.values());
-            while(vertices.size() > 2) {
+            while (vertices.size() > 2) {
                 Edge<T> removed = eds.remove(ran.nextInt(eds.size()));
                 // remove self loop
-                eds.removeIf( p -> p.equals(removed));
+                eds.removeIf(p -> p.equals(removed));
                 vertices.remove(removed.a);
                 vertices.remove(removed.b);
                 vertices.add(removed.contract());
@@ -337,12 +362,12 @@ public class RandomContraction {
         while (in.hasNextLine()) {
             List<Integer> input = Stream
                     .of(in.nextLine().trim().split("\\s+"))
-                    .map( i -> Integer.valueOf(i))
+                    .map(i -> Integer.valueOf(i))
                     .collect(Collectors.toList());
             System.out.println(input);
             Iterator<Integer> it = input.iterator();
             int fist = it.next();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 int next = it.next();
                 if (next > fist)
                     g.addEdge(fist, next);
@@ -350,18 +375,18 @@ public class RandomContraction {
                 // connection next <-> first has already been added
             }
         }
-        int[] res = IntStream.range(0,100).map(
+        int[] res = IntStream.range(0, 100).map(
                 ii -> {
-            int min = Integer.MAX_VALUE;
-            // n = #vertices = 200
-            // Attempt 100 time
-            // Pr[100 trial fail] <= e^(-100/200^2) = 99.75
-            for (int i = 0; i < 100; i++) {
-                int val = g.attempMinCut();
-                if (val < min) min = val;
-            }
-            return min;
-        }
+                    int min = Integer.MAX_VALUE;
+                    // n = #vertices = 200
+                    // Attempt 100 time
+                    // Pr[100 trial fail] <= e^(-100/200^2) = 99.75
+                    for (int i = 0; i < 100; i++) {
+                        int val = g.attemptMinCut();
+                        if (val < min) min = val;
+                    }
+                    return min;
+                }
         ).toArray();
         System.out.println("Number of crossing edges for min cut: " + res);
     }
