@@ -171,7 +171,7 @@ public class HuffmanCode<T> {
         if(!leaves.add(leaf)) throw new IllegalArgumentException();
     }
 
-    public Map<T, String> getEncodingRule() {
+    public Map<T, String> getEncodingRuleUsingHeap() {
         // version with priority queue
 
         // simple case
@@ -192,6 +192,38 @@ public class HuffmanCode<T> {
         return code;
     }
 
+    public Map<T, String> getEncodingRuleUsingQueues() {
+        // version using two queue
+        // simple case
+        if(leaves.size() == 0) return new HashMap<>();
+        if(leaves.size() == 0) return new HashMap<T, String>() {
+            {put(leaves.iterator().next().value, "0");}
+        };
+
+        List<Tree<T>> list = new ArrayList<>(leaves);
+        Collections.sort(list);
+        Queue<Tree<T>> a = new LinkedList<>(list);
+        Queue<Tree<T>> b = new LinkedList<>();
+        while(a.size() + b.size() >= 2) {
+            Tree<T> s1 = takeSmallest(a, b);
+            Tree<T> s2 = takeSmallest(a, b);
+            Tree<T> meta = new Node<>(s1, s2, s1.frequency() + s2.frequency());
+            b.add(meta);
+        }
+        HashMap<T, String> code = new HashMap<>();
+        traverseTreeAndBuildCode(b.peek(), code, "");
+        return code;
+    }
+
+    /** Take a tree with smallest frequency from the two queue*/
+    private Tree<T> takeSmallest(Queue<Tree<T>> a, Queue<Tree<T>> b) {
+        if(a.isEmpty() && b.isEmpty()) throw new IllegalArgumentException();
+        if(a.isEmpty()) return b.poll();
+        if(b.isEmpty()) return a.poll();
+        if(a.peek().compareTo(b.peek()) <= 0) return a.poll();
+        else return b.poll();
+    }
+
     private void traverseTreeAndBuildCode(Tree<T> tree, Map<T, String> map, String code) {
         if(tree.isLeaf()) map.put(tree.getSymbol(), code);
         else {
@@ -206,9 +238,14 @@ public class HuffmanCode<T> {
         h.addSymbol("b", 20);
         h.addSymbol("c", 10);
         h.addSymbol("d", 5);
-        h.addSymbol("e", 5);
+        h.addSymbol("e", 3);
         h.addSymbol("g", 1);
         h.addSymbol("h", 0.5);
-        System.out.println(h.getEncodingRule());
+        h.addSymbol("i", 67);
+        h.addSymbol("k", 392);
+        h.addSymbol("l", 3);
+        h.addSymbol("m", 389570);
+        System.out.println(h.getEncodingRuleUsingQueues());
+        System.out.println(h.getEncodingRuleUsingHeap());
     }
 }
