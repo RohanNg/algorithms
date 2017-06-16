@@ -23,6 +23,8 @@ public class OptimalAlignment {
     }
 
     public static Tuple<String> getOptimalAlignment(final String Y, final String X, final int gapPen, final int misMatchPen) {
+        // implementation using dynamic programming paradigm
+        // Time complexity: O(Y.length * X.length)
         int[][] pen = new int[Y.length()][];
 
         for(int i = 0; i < Y.length(); i++)
@@ -53,11 +55,8 @@ public class OptimalAlignment {
         while(currX > 0 && currY > 0) {
             final int val = pen[currY][currX];
             if(val == pen[currY-1][currX-1] + (XX[currX] == YY[currY] ? 0 : misMatchPen)) {
-                // case 1
-                XXX.append(XX[currX]);
-                YYY.append(YY[currY]);
-                currX--;
-                currY--;
+                XXX.append(XX[currX--]);
+                YYY.append(YY[currY--]);
             } else if (val == pen[currY][currX-1] + gapPen) {
                 XXX.append(XX[currX--]);
                 YYY.append('_');

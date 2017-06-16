@@ -9,11 +9,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class OptimalAlignmentTest {
 
+
+    private void test(String a, String b, String expectA, String expectB) {
+        OptimalAlignment.Tuple<String> tup = OptimalAlignment.getOptimalAlignment(a,b,1,1);
+        assertTrue(tup.getE1().equals(expectA), "Expect" + tup.getE1() + " != " + expectA);
+        assertTrue(tup.getE2().equals(expectB), "Expect" + tup.getE2() + " != " + expectB);
+    }
+
     @Test
     void testOptimalAlignment_exactSequence() {
-        OptimalAlignment.Tuple<String> tup = OptimalAlignment.getOptimalAlignment("abc","abc",1,1);
-        assertTrue(tup.getE1().equals("abc"));
-        assertTrue(tup.getE2().equals("abc"));
+        test("qwerty", "qwerty","qwerty", "qwerty");
     }
 
     @Test
@@ -25,22 +30,16 @@ class OptimalAlignmentTest {
 
     @Test
     void testOptimalAlignment_gapInOneSequence_gapAddedAsLast() {
-        OptimalAlignment.Tuple<String> tup = OptimalAlignment.getOptimalAlignment("123456789","123456789abc",1,1);
-        assertTrue(tup.getE1().equals("123456789___"));
-        assertTrue(tup.getE2().equals("123456789abc"));
+        test("123456789", "123456789abc",
+                "123456789___",
+                "123456789abc");
     }
 
     @Test
     void testOptimalAlignment_gapInOneSequence_gapAddedInBetween() {
-        OptimalAlignment.Tuple<String> tup = OptimalAlignment.getOptimalAlignment("123456789","123a4b56c78d9",1,1);
-        assertTrue(tup.getE1().equals("123_4_56_78_9"));
-        assertTrue(tup.getE2().equals("123a4b56c78d9"));
-    }
-
-    private void test(String a, String b, String expectA, String expectB) {
-        OptimalAlignment.Tuple<String> tup = OptimalAlignment.getOptimalAlignment(a,b,1,1);
-        assertTrue(tup.getE1().equals(expectA), tup.getE1() + " != " + expectA);
-        assertTrue(tup.getE2().equals(expectB), tup.getE2() + " != " + expectB);
+        test("123456789", "123a4b56c78d9",
+                "123_4_56_78_9",
+                "123a4b56c78d9");
     }
 
     @Test
@@ -69,9 +68,30 @@ class OptimalAlignmentTest {
     }
 
     @Test
-    void testOptimalAlignment_gapInTwoSequence_gapAddedInBetweenAndFirstAndLast() {
+    void testOptimalAlignment_gapInTwoSequence_gapAddedInBetween() {
         test("abc13579", "ac123456789",
                 "abc1_3_5_7_9",
                 "a_c123456789");
+    }
+
+    @Test
+    void testOptimalAlignment_gapInTwoSequence_gapAddedInBetweenAndFirst() {
+        test("aaaabc13579", "bc123456789",
+                "aaaabc1_3_5_7_9",
+                "____bc123456789");
+    }
+
+    @Test
+    void testOptimalAlignment_gapInTwoSequence_gapAddedInBetweenAndLast() {
+        test("abc13579xy", "abc123456789xyz",
+                "abc1_3_5_7_9xy_",
+                "abc123456789xyz");
+    }
+
+    @Test
+    void testOptimalAlignment_gapInTwoSequence_gapAddedInBetweenAndLastAndFirst() {
+        test("aaaabc13579xy", "bc123456789xyzt",
+                "aaaabc1_3_5_7_9xy__",
+                "____bc123456789xyzt");
     }
 }
