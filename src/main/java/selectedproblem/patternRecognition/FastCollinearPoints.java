@@ -1,4 +1,4 @@
-package patternRecognition;
+package selectedproblem.patternRecognition;
 
 import java.util.Arrays;
 

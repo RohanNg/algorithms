@@ -1,4 +1,4 @@
-package eightPuzzle;
+package selectedproblem.eightPuzzle;
 
 import java.util.ArrayList;
 import java.util.Arrays;

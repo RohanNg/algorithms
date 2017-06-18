@@ -1,4 +1,4 @@
-package patternRecognition;
+package selectedproblem.patternRecognition;
 
 /******************************************************************************
  *  Compilation:  javac Point.java
