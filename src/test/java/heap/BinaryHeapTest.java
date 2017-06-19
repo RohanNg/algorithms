@@ -1,5 +1,6 @@
 package heap;
 
+import edu.princeton.cs.algs4.In;
 import heap.BinaryHeap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

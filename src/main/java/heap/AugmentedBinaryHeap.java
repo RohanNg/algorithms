@@ -1,14 +1,18 @@
 package heap;
 
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.Objects;
 
-public class BinaryHeap<T extends Comparable<T>> {
+public class AugmentedBinaryHeap<T extends AugmentedBinaryHeap.Element> {
 
-    private Object[] vals;
+    public interface Element {
+        void setPosition(int i);
+        int getPosition();
+    }
+
+    private Element[] vals;
     private int size;
     private Comparator<? super T> comparator;
 
@@ -25,30 +29,27 @@ public class BinaryHeap<T extends Comparable<T>> {
             assert vals[i] == null;
         assert size <= vals.length;
         assert size >= 0;
+
+        for(int i = 0; i < size(); i++)
+            assert i == vals[i].getPosition();
     }
+
     private void checkParent(int i) {
         int leftChild = 2 * i + 1;
         int rightChild = 2 * i + 2;
-        if (leftChild < size && !lt(i, leftChild)) {
-            System.out.println(vals[i] + " " + vals[leftChild]);
-            throw new RuntimeException();
-        }
+        if (leftChild < size ) assert lt(i, leftChild);
         if (rightChild < size) assert lt(i, rightChild);
     }
 
-    public BinaryHeap() {
-        vals = new Object[1];
-        this.size = 0;
-    }
-
-    public BinaryHeap(Comparator<? super T> comparator) {
-        vals = new Object[1];
+    public AugmentedBinaryHeap(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator);
+        vals = new Element[1];
         this.size = 0;
         this.comparator = comparator;
     }
 
     private void resize(int newSize) {
-        Object[] copy = new Object[newSize];
+        Element[] copy = new Element[newSize];
         System.arraycopy(vals, 0, copy, 0, size);
         vals = copy;
     }
@@ -65,14 +66,16 @@ public class BinaryHeap<T extends Comparable<T>> {
      * Check if vals[i] is less than vals[t]
      */
     private boolean lt(int i, int t) {
-        if(comparator != null) return comparator.compare((T) vals[i],(T) vals[t]) <= 0;
-        else return ((T) vals[i]).compareTo((T) vals[t]) <= 0;
+        return comparator.compare((T) vals[i], (T) vals[t]) <= 0;
     }
 
-    private void swap(int i, int t) {
-        Object tVal = vals[t];
-        vals[t] = vals[i];
+    private void swap(final int i,final int t) {
+        Element tVal = vals[t];
+        Element iVal = vals[i];
+        tVal.setPosition(i);
+        iVal.setPosition(t);
         vals[i] = tVal;
+        vals[t] = iVal;
     }
 
 
@@ -102,9 +105,11 @@ public class BinaryHeap<T extends Comparable<T>> {
      *  Running time O(log(n))
      * */
     public void insert(T value) {
-        if (size == vals.length)
-            resize(size * 4);
+        if (size == vals.length) resize(size * 4);
+
         vals[size] = value;
+        value.setPosition(size);
+
         swim(size++);
         checkRep();
     }
@@ -119,25 +124,37 @@ public class BinaryHeap<T extends Comparable<T>> {
      * Running time O(log(n))
      */
     public T delMin() {
+        return delAt(0);
+    }
+
+    public T delAt(int index) {
+        if(index < 0 || index >= size())
+            throw new IllegalArgumentException("Index out of bound");
+
         if (size == vals.length/4) resize(vals.length/2);
-        Object min = vals[0];
-        vals[0] = vals[size - 1];
-        vals[--size] = null;
-        sink(0);
-        checkRep();
-        return (T) min;
+
+        Element deleted = vals[index];
+
+        if(index == size() - 1) {
+            vals[--size] = null;
+            return (T) deleted;
+        } else {
+            Element last = vals[size - 1];
+            last.setPosition(index);
+            vals[index] = last;
+            vals[--size] = null;
+            swim(last.getPosition());
+            sink(last.getPosition());
+            checkRep();
+            return (T) deleted;
+        }
     }
 
-    public static <T extends Comparable<T>> BinaryHeap<T> heapify(Collection<? extends T> elem) {
-        return heapify(elem, null);
-    }
-
-    public static <T extends Comparable<T>> BinaryHeap<T> heapify(Collection<? extends T> elem, Comparator<? super T> comparator) {
-        Object[] values = new Object[elem.size()];
+    public static <T extends Element> AugmentedBinaryHeap<T> heapify(Collection<? extends T> elem, Comparator<? super T> comparator) {
+        Element[] values = new Element[elem.size()];
         int i = 0;
         for(T e : elem) values[i++] = e;
-        BinaryHeap<T> bh = new BinaryHeap<>();
-        bh.comparator = comparator;
+        AugmentedBinaryHeap<T> bh = new AugmentedBinaryHeap<>(comparator);
         bh.vals = values;
         bh.size = elem.size();
         for(int o = elem.size()/2; o >= 0; o--)
