@@ -12,22 +12,11 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class AugmentedBinaryHeapTest {
 
-    private static class AugmentedInt implements AugmentedBinaryHeap.Element {
+    private static class AugmentedInt extends AugmentedBinaryHeap.Element {
         private final int value;
-        private int idx;
 
         public AugmentedInt(int value) {
             this.value = value;
-        }
-
-        @Override
-        public void setPosition(int i) {
-            idx = i;
-        }
-
-        @Override
-        public int getPosition() {
-            return idx;
         }
 
         public int getValue() {
@@ -53,7 +42,6 @@ class AugmentedBinaryHeapTest {
         public String toString() {
             final StringBuffer sb = new StringBuffer("{");
             sb.append(value);
-            sb.append(idx);
             sb.append('}');
             return sb.toString();
         }

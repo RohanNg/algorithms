@@ -7,9 +7,14 @@ import java.util.Objects;
 
 public class AugmentedBinaryHeap<T extends AugmentedBinaryHeap.Element> {
 
-    public interface Element {
-        void setPosition(int i);
-        int getPosition();
+    public static abstract class Element {
+        private int idx;
+        public void setPosition(int i) {
+            this.idx = i;
+        }
+        public int getPosition() {
+            return idx;
+        }
     }
 
     private Element[] vals;

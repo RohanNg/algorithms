@@ -1,15 +1,28 @@
 package graph;
 
+import edu.princeton.cs.algs4.In;
+import heap.AugmentedBinaryHeap;
 import heap.BinaryHeap;
 import scala.Int;
 
+import java.io.FileReader;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class MinuminSpanningTree<T> {
-    public static class Node<T> {
+    public static class Node<T> extends AugmentedBinaryHeap.Element{
         private final T val;
         private List<Edge<T>> edges;
         private boolean visited = false;
+
+        private Edge<T> minEdge;
+
+        private int getPriority() {
+            return minEdge == null ? Integer.MAX_VALUE : minEdge.cost;
+        }
+
         public Node(T val) {
             Objects.requireNonNull(val);
             this.val = val;
@@ -19,10 +32,11 @@ public class MinuminSpanningTree<T> {
             return edges == null ? Collections.emptyList() : edges;
         }
 
-        public void connect(Node<T> other, int cost) {
+        public Edge<T> connect(Node<T> other, int cost) {
             Edge<T> edge = new Edge<T>(this, other, cost);
             this.addEdge(edge);
             other.addEdge(edge);
+            return edge;
         }
 
         private void addEdge(Edge<T> edge) {
@@ -41,6 +55,11 @@ public class MinuminSpanningTree<T> {
         }
 
         @Override
+        public String toString() {
+            return val.toString();
+        }
+
+        @Override
         public int hashCode() {
             return val.hashCode();
         }
@@ -55,7 +74,19 @@ public class MinuminSpanningTree<T> {
             this.b = b;
             this.cost = cost;
         }
+
+        @Override
+        public String toString() {
+            final StringBuffer sb = new StringBuffer("{");
+            sb.append(a);
+            sb.append(",").append(b);
+            sb.append(", cost=").append(cost);
+            sb.append('}');
+            return sb.toString();
+        }
+
         public Node<T> getOtherEnd(Node<T> oneEnd) {
+
             return oneEnd.equals(a) ? b : a;
         }
     }
@@ -69,98 +100,83 @@ public class MinuminSpanningTree<T> {
     }
 
     private void addNode(T value) {
-        assertContainNode(value);
+        assertContainNode(false, value);
         nodes.put(value, new Node<>(value));
     }
 
-    private void assertContainNode(T... value) {
+    private void assertContainNode(boolean isContained, T... value) {
         for(T val : value) {
-            if (nodes.containsKey(val)) throw new IllegalArgumentException();
+            if (isContained != nodes.containsKey(val)) throw new IllegalArgumentException();
         }
     }
 
     private void addEdge(T a, T b, int cost) {
-        assertContainNode(a, b);
-        nodes.get(a).connect(nodes.get(b), cost);
+        assertContainNode(true, a, b);
+        this.edges.add(nodes.get(a).connect(nodes.get(b), cost));
     }
 
-//    private List<Edge<T>> computeMinimumSpanningTree() {
-//        if(edges.isEmpty()) return Collections.emptyList();
-//        return computeMSTPrim();
-//    }
-
-    private static class PrimNode<T> implements Comparable<PrimNode<T>> {
-        public final T value;
-        public Edge<T> edge;
-        public PrimNode(T value, Edge<T> edge) {
-            this.value = value;
-            this.edge = edge;
-        }
-        public PrimNode(T value) {
-            this.value = value;
-        }
-        private int getScore() {
-            return edge == null ? Integer.MAX_VALUE : edge.cost;
-        }
-        @Override
-        public int compareTo(PrimNode<T> o) {
-            return Integer.compare(this.getScore(), o.getScore());
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            PrimNode<?> primNode = (PrimNode<?>) o;
-
-            return value.equals(primNode.value);
-        }
-
-        @Override
-        public int hashCode() {
-            return value.hashCode();
-        }
+    public List<Edge<T>> computeMinimumSpanningTree() {
+        if(edges.isEmpty()) return Collections.emptyList();
+        return computeMSTPrim();
     }
 
-    private void markAllNodeUnvisited() {
-        for(Node<T> node : nodes.values())
+    private void prepareMSTPRIM() {
+        for(Node<T> node : nodes.values()) {
             node.visited = false;
+            node.minEdge = null;
+        }
     }
 
-//    private List<Edge<T>> computeMSTPrim() {
-//        // initialize
-//        List<Edge<T>> selectedEdges = new ArrayList<>();
-//
-//        Set<T> unProcessedVertices = new HashSet<T>(nodes.keySet());
-//        Node<T> arbitraryNode = nodes.get(unProcessedVertices.iterator().next());
-//        unProcessedVertices.remove(arbitraryNode.val);
-//        List<PrimNode<T>> primNodes = new ArrayList<>();
-//        for(Edge<T> edge : arbitraryNode.getEdges()) {
-//            T otherEnd = edge.getOtherEnd(arbitraryNode).val;
-//            primNodes.add(new PrimNode<>(otherEnd, edge));
-//            unProcessedVertices.remove(otherEnd);
-//        }
-//        for(T left : unProcessedVertices)
-//            primNodes.add(new PrimNode<>(left));
-//
-//        BinaryHeap<PrimNode<T>> bh = BinaryHeap.heapify(primNodes);
-//
-//        // ready to process
-//        while(bh.isEmpty()) {
-//            PrimNode<T> next = bh.delMin();
-//            selectedEdges.add(next.edge);
-//
-//            Node<T> processed = nodes.get(next.value);
-//            processed.visited = true;
-//            for(Edge<T> edge : processed.getEdges()) {
-//                Node<T> otherEnd = edge.getOtherEnd(processed);
-//                if(!otherEnd.visited) {
-//                    bh.de
-//                }
-//
-//            }
-//        }
-//    }
+    private List<Edge<T>> computeMSTPrim() {
+        // initialize
+        prepareMSTPRIM();
+        List<Edge<T>> selectedEdges = new ArrayList<>();
+        AugmentedBinaryHeap<Node<T>> heap = new AugmentedBinaryHeap<>(Comparator.comparingInt(n -> n.getPriority()));
 
+        Set<Node<T>> unProcessedVertices = new HashSet<>(nodes.values());
+        Node<T> arbitraryNode = unProcessedVertices.iterator().next();
+        arbitraryNode.visited = true;
+        unProcessedVertices.remove(arbitraryNode);
+
+        for(Edge<T> edge : arbitraryNode.getEdges()) {
+            Node<T> otherEnd = edge.getOtherEnd(arbitraryNode);
+            otherEnd.minEdge = edge;
+            heap.insert(otherEnd);
+            unProcessedVertices.remove(otherEnd);
+        }
+
+        for(Node<T> left : unProcessedVertices)
+            heap.insert(left);
+
+        // ready to process
+        while(!heap.isEmpty()) {
+            Node<T> node = heap.delMin();
+            node.visited = true;
+            selectedEdges.add(node.minEdge);
+
+            for(Edge<T> edge : node.getEdges()) {
+                Node<T> otherEnd = edge.getOtherEnd(node);
+                if(!otherEnd.visited && edge.cost < otherEnd.getPriority()) {
+                    heap.delAt(otherEnd.getPosition());
+                    otherEnd.minEdge = edge;
+                    heap.insert(otherEnd);
+                }
+            }
+        }
+        return selectedEdges;
+    }
+
+    public static void main(String[] args) throws Exception {
+        MinuminSpanningTree<Integer> min = new MinuminSpanningTree<>();
+        Scanner in = new Scanner(new FileReader("./testData/graph/minSpanningTree.txt"));
+        String[] size = in.nextLine().trim().split(" ");
+        for(int i = 1; i <= Integer.valueOf(size[0]); i ++) min.addNode(i);
+
+        while (in.hasNextLine()) {
+            String[] edge = in.nextLine().trim().split("\\s+");
+            System.out.println(Arrays.toString(edge));
+            min.addEdge(Integer.valueOf(edge[0]), Integer.valueOf(edge[1]), Integer.valueOf(edge[2]));
+        }
+        System.out.println(min.computeMinimumSpanningTree().stream().map(i -> i.cost).reduce(0, (i1, i2) -> i1 + i2));
+    }
 }
