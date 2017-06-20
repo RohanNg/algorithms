@@ -1,4 +1,4 @@
-package percolation;
+package selectedproblem.percolation;
 
 public class PercolationRecursive implements Percolation {
 	private final int[] states; 

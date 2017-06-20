@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.Test;
+import selectedproblem.Discrete;
 
 import java.util.Arrays;
 

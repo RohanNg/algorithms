@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class AugmentedBinaryHeapTest {
 
-    private static class AugmentedInt extends AugmentedBinaryHeap.Element {
+    private static class AugmentedInt extends AugmentedBinaryHeap.AbstractElement {
         private final int value;
 
         public AugmentedInt(int value) {
@@ -61,7 +61,7 @@ class AugmentedBinaryHeapTest {
             }
             System.out.println(Arrays.toString(ints.stream().mapToInt(i -> i.getValue()).toArray()));
             for (AugmentedInt i : ints) {
-                assertTrue(i.equals(abh.delAt(i.getPosition())));
+                assertTrue(i.equals(abh.delete(i)));
             }
             assertTrue(abh.isEmpty());
 
@@ -78,7 +78,7 @@ class AugmentedBinaryHeapTest {
             abh.insert(num);
 
         for (AugmentedInt i : ints)
-            assertTrue(i.equals(abh.delAt(i.getPosition())));
+            assertTrue(i.equals(abh.delete(i)));
 
         System.out.println(Arrays.toString(ints.stream().mapToInt(i -> i.getValue()).toArray()));
         assertTrue(abh.isEmpty());

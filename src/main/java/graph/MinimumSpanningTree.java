@@ -1,18 +1,12 @@
 package graph;
 
-import edu.princeton.cs.algs4.In;
 import heap.AugmentedBinaryHeap;
-import heap.BinaryHeap;
-import scala.Int;
 
 import java.io.FileReader;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
-public class MinuminSpanningTree<T> {
-    public static class Node<T> extends AugmentedBinaryHeap.Element{
+public class MinimumSpanningTree<T> {
+    public static class Node<T> extends AugmentedBinaryHeap.AbstractElement{
         private final T val;
         private List<Edge<T>> edges;
         private boolean visited = false;
@@ -94,7 +88,7 @@ public class MinuminSpanningTree<T> {
     private Map<T, Node<T>> nodes;
     private List<Edge<T>> edges;
 
-    public MinuminSpanningTree() {
+    public MinimumSpanningTree() {
         this.nodes = new HashMap<>();
         this.edges = new ArrayList<>();
     }
@@ -157,7 +151,7 @@ public class MinuminSpanningTree<T> {
             for(Edge<T> edge : node.getEdges()) {
                 Node<T> otherEnd = edge.getOtherEnd(node);
                 if(!otherEnd.visited && edge.cost < otherEnd.getPriority()) {
-                    heap.delAt(otherEnd.getPosition());
+                    heap.delete(otherEnd);
                     otherEnd.minEdge = edge;
                     heap.insert(otherEnd);
                 }
@@ -167,7 +161,7 @@ public class MinuminSpanningTree<T> {
     }
 
     public static void main(String[] args) throws Exception {
-        MinuminSpanningTree<Integer> min = new MinuminSpanningTree<>();
+        MinimumSpanningTree<Integer> min = new MinimumSpanningTree<>();
         Scanner in = new Scanner(new FileReader("./testData/graph/minSpanningTree.txt"));
         String[] size = in.nextLine().trim().split(" ");
         for(int i = 1; i <= Integer.valueOf(size[0]); i ++) min.addNode(i);

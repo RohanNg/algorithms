@@ -7,12 +7,17 @@ import java.util.Objects;
 
 public class AugmentedBinaryHeap<T extends AugmentedBinaryHeap.Element> {
 
-    public static abstract class Element {
+    public interface Element {
+        void setPosition(int i);
+        int getPosition();
+    }
+
+    public static abstract class AbstractElement implements Element {
         private int idx;
-        public void setPosition(int i) {
+        public final void setPosition(int i) {
             this.idx = i;
         }
-        public int getPosition() {
+        public final int getPosition() {
             return idx;
         }
     }
@@ -129,10 +134,10 @@ public class AugmentedBinaryHeap<T extends AugmentedBinaryHeap.Element> {
      * Running time O(log(n))
      */
     public T delMin() {
-        return delAt(0);
+        return delete(0);
     }
 
-    public T delAt(int index) {
+    private T delete(int index) {
         if(index < 0 || index >= size())
             throw new IllegalArgumentException("Index out of bound");
 
@@ -153,6 +158,10 @@ public class AugmentedBinaryHeap<T extends AugmentedBinaryHeap.Element> {
             checkRep();
             return (T) deleted;
         }
+    }
+
+    public T delete(T element) {
+        return delete(element.getPosition());
     }
 
     public static <T extends Element> AugmentedBinaryHeap<T> heapify(Collection<? extends T> elem, Comparator<? super T> comparator) {

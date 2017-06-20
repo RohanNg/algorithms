@@ -1,4 +1,4 @@
-package percolation;
+package selectedproblem.percolation;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class PercolationWith2UF implements Percolation{
 	private WeightedQuickUnionUF pecoTopBot, pecoTop;

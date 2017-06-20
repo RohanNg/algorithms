@@ -1,4 +1,4 @@
-package percolation;
+package selectedproblem.percolation;
 /******************************************************************************
  *  Compilation:  javac PercolationVisualizer.java
  *  Execution:    java PercolationVisualizer input.txt

@@ -1,4 +1,4 @@
-package multiplication.integer
+package selectedproblem.integer
 
 import java.util
 import java.util.LinkedList

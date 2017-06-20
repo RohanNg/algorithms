@@ -1,4 +1,4 @@
-package percolation;
+package selectedproblem.percolation;
 
 public interface Percolation {
 	void open(int row, int col);
