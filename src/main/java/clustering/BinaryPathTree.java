@@ -1,5 +1,5 @@
 package clustering;
-import edu.princeton.cs.algs4.In;
+
 import unionfind.UnionFind;
 
 import java.io.FileReader;
@@ -9,15 +9,20 @@ import java.util.*;
 public class BinaryPathTree<T> {
     public interface Tree<T> {
         boolean isLeaf();
+
         boolean isNode();
+
         T getSymbol();
+
         Tree<T> left();
+
         Tree<T> right();
     }
 
     public static class Package<T> {
         private final String path;
         private final T value;
+
         public Package(String path, T value) {
             this.path = path;
             this.value = value;
@@ -86,6 +91,7 @@ public class BinaryPathTree<T> {
             return sb.toString();
         }
     }
+
     private static class Leaf<T> implements Tree<T> {
 
         private final T value;
@@ -129,7 +135,7 @@ public class BinaryPathTree<T> {
     private Tree<T> root = new Node<>(null, null);
 
     public void buildSearchTree(List<Package<T>> nodes) {
-        for(Package<T> node : nodes) {
+        for (Package<T> node : nodes) {
             root = buildSearchTree(root, node.path.getBytes(), 0, node.value);
         }
     }
@@ -140,18 +146,18 @@ public class BinaryPathTree<T> {
 
     private Tree<T> buildSearchTree(Tree<T> curr, byte[] route, int currentIndex, T value) {
         if (currentIndex == route.length - 1) {
-            if(route[currentIndex] == '1')
+            if (route[currentIndex] == '1')
                 return new Node<>(curr == null ? null : curr.left(), new Leaf<>(value));
             else
                 return new Node<>(new Leaf<>(value), curr == null ? null : curr.right());
         } else {
-            if(route[currentIndex] == '1')
+            if (route[currentIndex] == '1')
                 return new Node<>(
                         curr == null ? null : curr.left(),
                         buildSearchTree(curr == null ? null : curr.right(), route, currentIndex + 1, value));
             else
                 return new Node<>(
-                        buildSearchTree(curr == null ? null : curr.left(),route, currentIndex + 1, value),
+                        buildSearchTree(curr == null ? null : curr.left(), route, currentIndex + 1, value),
                         curr == null ? null : curr.right());
         }
     }
@@ -167,19 +173,19 @@ public class BinaryPathTree<T> {
     }
 
     private T findValue(Tree<T> current, byte[] direction, int index) {
-        if(index < direction.length - 1) {
-            if(current == null) return null;
+        if (index < direction.length - 1) {
+            if (current == null) return null;
             else if (direction[index] == '1') return findValue(current.right(), direction, index + 1);
             else return findValue(current.left(), direction, index + 1);
         } else {
             // index = direction.length - 1
-            if(current == null) return null;
-            if(current.isLeaf()) return null;
+            if (current == null) return null;
+            if (current.isLeaf()) return null;
             if (direction[index] == '1') {
-                if(current.right() != null && current.right().isLeaf()) return current.right().getSymbol();
+                if (current.right() != null && current.right().isLeaf()) return current.right().getSymbol();
                 else return null;
             } else {
-                if(current.left() != null && current.left().isLeaf()) return current.left().getSymbol();
+                if (current.left() != null && current.left().isLeaf()) return current.left().getSymbol();
                 else return null;
             }
         }
@@ -191,59 +197,87 @@ public class BinaryPathTree<T> {
     }
 
 
-    public static int getManhattanDistance(byte[] a, byte[] b) {
+    public static int getHammingDistance(byte[] a, byte[] b) {
         int count = 0;
-        for( int i = 0; i < a.length; i++) {
-            if(a[i] != b[i]) count ++;
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] != b[i]) count++;
         }
         return count;
     }
 
-    public static void main(String[] args) throws Exception {
+    private static class Edge {
+        final int a;
+        final int b;
+
+        public Edge(int a, int b) {
+            if (a == b) throw new RuntimeException();
+            this.a = Math.min(a, b);
+            this.b = Math.max(a, b);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Edge edge = (Edge) o;
+
+            if (a != edge.a) return false;
+            return b == edge.b;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = a;
+            result = 31 * result + b;
+            return result;
+        }
+    }
+
+    /**
+     * The format is:
+     * <p>
+     * [# of nodes] [# of bits for each node's label]
+     * <p>
+     * [first bit of node 1] ... [last bit of node 1]
+     * <p>
+     * [first bit of node 2] ... [last bit of node 2]
+     * <p>
+     * ...
+     * <p>
+     * For example, the third line of the file "0 1 1 0 0 1 1 0 0 1 0 1 1 1 1 1 1 0 1 0 1 1 0 1"
+     * denotes the 24 bits associated with node #2.
+     * <p>
+     * The distance between two nodes u and v in this problem is defined as the Hamming distance---
+     * the number of differing bits --- between the two nodes' labels. For example, the Hamming distance
+     * between the 24-bit label of node #2 above and the label "0 1 0 0 0 1 0 0 0 1 0 1 1 1 1 1 1 0 1 0 0 1 0 1"
+     * is 3 (since they differ in the 3rd, 7th, and 21st bits).
+     * <p>
+     * The question is: what is the largest value of k such that there is a k-clustering with spacing at least 3?
+     * That is, how many clusters are needed to ensure that no pair of nodes with all but 2 bits in common get
+     * split into different clusters?
+     *
+     * @param filePath
+     * @return largest value of k such that there is a k-clustering with spacing at least 3
+     * @throws Exception
+     */
+    public static int solveProblem(String filePath) throws Exception {
         BinaryPathTree<Integer> binaryPathTree = new BinaryPathTree<>();
-        Scanner in = new Scanner(new FileReader("./testData/graph/clustering_big.txt"));
+        Scanner in = new Scanner(new FileReader(filePath));
         Map<Integer, Package<Integer>> packages = new HashMap<>();
 
         String[] info = in.nextLine().trim().split("\\s+");
         final int nodeNum = Integer.valueOf(info[0]);
         System.out.println("#node: " + info[0] + ", #bits/path: " + info[1]);
 
-        class Edge {
-            final int a;
-            final int b;
-            public Edge(int a, int b) {
-                if(a == b) throw new RuntimeException();
-                this.a = Math.min(a, b);
-                this.b = Math.max(a, b);
-            }
-
-            @Override
-            public boolean equals(Object o) {
-                if (this == o) return true;
-                if (o == null || getClass() != o.getClass()) return false;
-
-                Edge edge = (Edge) o;
-
-                if (a != edge.a) return false;
-                return b == edge.b;
-            }
-
-            @Override
-            public int hashCode() {
-                int result = a;
-                result = 31 * result + b;
-                return result;
-            }
-        }
-
         List<Edge> length0Edges = new ArrayList<>();
 
         int i = 0;
         while (in.hasNextLine()) {
-            String path = in.nextLine().trim().replace(" ","");
+            String path = in.nextLine().trim().replace(" ", "");
             assert path.length() == Integer.valueOf(info[1]);
             Integer val = binaryPathTree.findValue(path);
-            if(val != null) {
+            if (val != null) {
                 length0Edges.add(new Edge(val, i));
             } else {
                 Package<Integer> pack = new Package<>(path, i);
@@ -253,61 +287,66 @@ public class BinaryPathTree<T> {
             i++;
         }
 
-        for(Package<Integer> p : packages.values() )
-            assert binaryPathTree.findValue(p.getPath()) == p.getValue();
+//        for(Package<Integer> p : packages.values() )
+//            assert binaryPathTree.findValue(p.getPath()) == p.getValue();
 
         Set<Edge> length1Edges = new HashSet<>();
-        for(Package<Integer> p : packages.values()) {
+        for (Package<Integer> p : packages.values()) {
             final byte[] path = p.getPath().getBytes();
-            for(int x = 0; x < path.length; x++) {
+            for (int x = 0; x < path.length; x++) {
                 final byte[] copy = Arrays.copyOf(path, path.length);
                 assert Arrays.equals(path, copy);
-                if(copy[x] == '0') copy[x] = '1';
+                if (copy[x] == '0') copy[x] = '1';
                 else copy[x] = '0';
 
                 Integer friend = binaryPathTree.findValue(copy);
-                if(friend != null) length1Edges.add(new Edge(p.getValue(), friend));
+                if (friend != null) length1Edges.add(new Edge(p.getValue(), friend));
             }
         }
 
         Set<Edge> length2Edges = new HashSet<Edge>();
-        for(Package<Integer> p : packages.values()) {
+        for (Package<Integer> p : packages.values()) {
             final byte[] path = p.getPath().getBytes();
-            for(int x = 0; x < path.length; x++) {
-                for( int y = x + 1; y < path.length; y ++) {
+            for (int x = 0; x < path.length; x++) {
+                for (int y = x + 1; y < path.length; y++) {
                     final byte[] copy = Arrays.copyOf(path, path.length);
-                    assert Arrays.equals(path, copy);
-                    if(copy[x] == '0') copy[x] = '1';
+
+                    if (copy[x] == '0') copy[x] = '1';
                     else copy[x] = '0';
 
-                    if(copy[y] == '0') copy[y] = '1';
+                    if (copy[y] == '0') copy[y] = '1';
                     else copy[y] = '0';
 
                     Integer friend = binaryPathTree.findValue(copy);
-                    if(friend != null) length2Edges.add(new Edge(p.getValue(), friend));
+                    if (friend != null) length2Edges.add(new Edge(p.getValue(), friend));
                 }
             }
         }
-//
+
 //        for(Edge e : length0Edges) {
-//            assert getManhattanDistance(packages.get(e.a).getPath().getBytes(), packages.get(e.b).getPath().getBytes()) == 0;
+//            assert getHammingDistance(packages.get(e.a).getPath().getBytes(), packages.get(e.b).getPath().getBytes()) == 0;
+//        }
+//
+//        for(Edge e : length1Edges) {
+//            assert getHammingDistance(packages.get(e.a).getPath().getBytes(), packages.get(e.b).getPath().getBytes()) == 1;
+//        }
+//
+//        for(Edge e : length2Edges) {
+//            assert getHammingDistance(packages.get(e.a).getPath().getBytes(), packages.get(e.b).getPath().getBytes()) == 2;
 //        }
 
-        for(Edge e : length1Edges) {
-            assert getManhattanDistance(packages.get(e.a).getPath().getBytes(), packages.get(e.b).getPath().getBytes()) == 1;
-        }
-
-        for(Edge e : length2Edges) {
-            assert getManhattanDistance(packages.get(e.a).getPath().getBytes(), packages.get(e.b).getPath().getBytes()) == 2;
-        }
-
         UnionFind uf = new UnionFind(nodeNum);
-        for(Edge e : length0Edges)
+        for (Edge e : length0Edges)
             uf.union(e.a, e.b);
-        for(Edge e : length1Edges)
+        for (Edge e : length1Edges)
             uf.union(e.a, e.b);
-        for(Edge e : length2Edges)
+        for (Edge e : length2Edges)
             uf.union(e.a, e.b);
-        System.out.println(uf.getComponentCount());
+
+        System.out.println("Result: " + uf.getComponentCount());
+        return uf.getComponentCount();
+    }
+
+    public static void main(String[] args) throws Exception {
     }
 }

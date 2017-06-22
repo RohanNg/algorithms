@@ -1,6 +1,5 @@
 package clustering;
 
-import edu.princeton.cs.algs4.In;
 import unionfind.UnionFind;
 
 import java.io.FileReader;
