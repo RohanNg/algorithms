@@ -34,11 +34,14 @@ public class MaximumWeightedIndependentSet {
 
         // SOLUTION with Dynamic Programming
         final int[] input = new int[symbolNum + 1];
+
         /**
          * Array that hold result to solution of sub problem.
          * Concretely:
          * subProblems[i] = MaxWIS for set containing input[1], input[2]... input[i]
          * subProblem[0] = MaxWIS for empty set
+         * Optimal solution structure:
+         *      subProblems[x] = Math.max(subProblems[x-1], subProblems[x-2] + input[x])
          */
         final int[] subProblems = new int[symbolNum + 1];
 
